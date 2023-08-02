@@ -8,20 +8,25 @@ import {
   Dimensions,
   ActivityIndicator,
   TextInput,
+  TouchableOpacity,
 } from "react-native";
+import RNPickerSelect from "react-native-picker-select";
 import { fetchPokemons } from "./services/pokemonApi";
 import { Pokemon } from "./domain/pokemon";
 import { useDispatch, useSelector } from "react-redux";
 import { setPokemons } from "../store/store";
+import Modal from "react-native-modal";
 
 const PokemonScreen = () => {
-  const dispatch = useDispatch(); // Get the dispatch function from React Redux
+  const dispatch = useDispatch();
 
   const pokemons = useSelector((state: any) => state.pokemons);
 
   const [localPokemons, setLocalPokemons] = useState<Pokemon[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedPokemon, setSelectedPokemon] = useState<Pokemon | null>(null);
+  const [selectedType, setSelectedType] = useState<string>("");
 
   useEffect(() => {
     const getPokemons = async () => {
@@ -62,7 +67,10 @@ const PokemonScreen = () => {
     const cardWidth = screenWidth * 0.9;
 
     return (
-      <View style={[styles.card, { width: cardWidth }]}>
+      <TouchableOpacity
+        onPress={() => openModal(item)}
+        style={[styles.card, { width: cardWidth }]}
+      >
         <View style={styles.leftColumn}>
           <Image
             style={styles.image}
@@ -84,8 +92,12 @@ const PokemonScreen = () => {
             ))}
           </View>
         </View>
-      </View>
+      </TouchableOpacity>
     );
+  };
+
+  const openModal = (pokemon: Pokemon) => {
+    setSelectedPokemon(pokemon);
   };
 
   return (
@@ -107,11 +119,87 @@ const PokemonScreen = () => {
             renderItem={renderItem}
             keyExtractor={(item) => item.id.toString()}
           />
+
+          {selectedPokemon !== null && (
+            <Modal
+              isVisible={selectedPokemon !== null}
+              onBackdropPress={() => setSelectedPokemon(null)}
+            >
+              <View style={styles.modalContent}>
+                <View style={styles.modalRow}>
+                  <View style={styles.leftColumn}>
+                    <Image
+                      style={styles.image}
+                      source={{ uri: selectedPokemon?.sprites.front_default }}
+                    />
+                  </View>
+                  <View style={styles.rightColumn}>
+                    <Text style={styles.idText}>{selectedPokemon?.id}</Text>
+                    <Text style={styles.nameText}>
+                      {capitalizeFirstLetter(selectedPokemon?.name)}
+                    </Text>
+                    <View style={styles.typeContainer}>
+                      {selectedPokemon?.types.map((type, index, array) => (
+                        <View key={index} style={styles.typeBox}>
+                          <Text style={styles.typeName}>
+                            {capitalizeFirstLetter(type.type.name)}
+                          </Text>
+                        </View>
+                      ))}
+                    </View>
+                  </View>
+                </View>
+                <View style={styles.modalRow}>
+                  <Text style={styles.addToTrainerText}>Add to Trainer</Text>
+                </View>
+                <View style={styles.modalRow}>
+                  <RNPickerSelect
+                    onValueChange={(value) => setSelectedType(value)}
+                    items={[
+                      { label: "Football", value: "football" },
+                      { label: "Baseball", value: "baseball" },
+                      { label: "Hockey", value: "hockey" },
+                    ]}
+                    style={{
+                      ...pickerSelectStyles,
+                    }}
+                  />
+                </View>
+              </View>
+            </Modal>
+          )}
         </>
       )}
     </View>
   );
 };
+
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    fontSize: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: "black",
+    borderRadius: 4,
+    color: "black",
+    paddingRight: 30,
+    width: "200%",
+    justifyContent: "center",
+  },
+  inputAndroid: {
+    fontSize: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderWidth: 1,
+    borderColor: "black",
+    borderRadius: 8,
+    color: "black",
+    paddingRight: 30,
+    width: "200%",
+    justifyContent: "center",
+  },
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -171,6 +259,44 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 10,
     marginTop: 10,
+  },
+  modalContent: {
+    backgroundColor: "white",
+    padding: 22,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 4,
+    borderColor: "rgba(0, 0, 0, 0.1)",
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: Dimensions.get("window").height * 0.8,
+  },
+
+  modalRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+
+  addToTrainerText: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+
+  dropdownContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "black",
+    borderRadius: 5,
+    padding: 5,
+    paddingLeft: 10,
+    width: "80%",
+    marginLeft: 10,
+    alignItems: "center",
   },
 });
 
