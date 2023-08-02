@@ -13,8 +13,9 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { setAuthenticated } from "./store/store";
 
 import LoginScreen from "./src/LoginScreen";
-import HomeScreen from "./src/HomeScreen";
+import PokemonScreen from "./src/PokemonScreen";
 import CustomDrawerContent from "./src/CustomDrawerContent";
+import TestScreen from "./src/TestScreen";
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -40,6 +41,10 @@ const AuthenticatedStack = ({ onLogout }: { onLogout: () => void }) => {
       drawerContent={(props) => (
         <CustomDrawerContent {...props} onLogout={onLogout} />
       )}
+      screenOptions={{
+        headerShown: true,
+        headerTitle: "Pokedex",
+      }}
     >
       <Drawer.Screen name="Main" component={MainTabs} />
     </Drawer.Navigator>
@@ -78,7 +83,7 @@ const MainTabs = () => {
     <Tab.Navigator>
       <Tab.Screen
         name="Pokemon"
-        component={HomeScreen}
+        component={PokemonScreen}
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
@@ -92,7 +97,7 @@ const MainTabs = () => {
       />
       <Tab.Screen
         name="Trainer"
-        component={HomeScreen}
+        component={TestScreen}
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
@@ -102,7 +107,7 @@ const MainTabs = () => {
       />
       <Tab.Screen
         name="Gym"
-        component={HomeScreen}
+        component={TestScreen}
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
