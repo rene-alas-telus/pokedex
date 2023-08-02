@@ -1,20 +1,117 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from "react";
+import { Provider, useSelector, useDispatch } from "react-redux";
+import store from "./store/store";
+import { BaseProvider } from "@telus-uds/components-base";
+import alliumTheme from "@telus-uds/theme-allium";
+import { StatusBar } from "expo-status-bar";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import { createDrawerNavigator } from "@react-navigation/drawer";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { setAuthenticated } from "./store/store";
 
-export default function App() {
+import LoginScreen from "./src/LoginScreen";
+import HomeScreen from "./src/HomeScreen";
+import CustomDrawerContent from "./src/CustomDrawerContent";
+
+const Stack = createStackNavigator();
+const Drawer = createDrawerNavigator();
+const Tab = createBottomTabNavigator();
+
+const AuthStack = () => {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Login"
+        component={LoginScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+    </Stack.Navigator>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+const AuthenticatedStack = ({ onLogout }: { onLogout: () => void }) => {
+  return (
+    <Drawer.Navigator
+      drawerContent={(props) => (
+        <CustomDrawerContent {...props} onLogout={onLogout} />
+      )}
+    >
+      <Drawer.Screen name="Main" component={MainTabs} />
+    </Drawer.Navigator>
+  );
+};
+
+const Navigation = () => {
+  const isAuth = useSelector((state: any) => state.isAuthenticated);
+  const dispatch = useDispatch();
+
+  const onLogout = () => {
+    dispatch(setAuthenticated(false));
+  };
+
+  return (
+    <NavigationContainer>
+      {!isAuth && <AuthStack />}
+      {isAuth && <AuthenticatedStack onLogout={onLogout} />}
+    </NavigationContainer>
+  );
+};
+
+const app = () => {
+  return (
+    <Provider store={store}>
+      <BaseProvider defaultTheme={alliumTheme}>
+        <Navigation />
+        <StatusBar style="auto" />
+      </BaseProvider>
+    </Provider>
+  );
+};
+
+const MainTabs = () => {
+  return (
+    <Tab.Navigator>
+      <Tab.Screen
+        name="Pokemon"
+        component={HomeScreen}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons
+              name="pokemon-go"
+              size={size}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Trainer"
+        component={HomeScreen}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome name="user" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Gym"
+        component={HomeScreen}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome name="home" size={size} color={color} />
+          ),
+        }}
+      />
+    </Tab.Navigator>
+  );
+};
+
+export default app;
