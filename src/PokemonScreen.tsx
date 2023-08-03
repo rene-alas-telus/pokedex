@@ -17,6 +17,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { setPokemons } from "../store/store";
 import Modal from "react-native-modal";
 
+import {
+  Trainer,
+  commonTrainers,
+  eliteFour,
+  gymLeaders,
+} from "../data/trainers";
+
 const PokemonScreen = () => {
   const dispatch = useDispatch();
 
@@ -26,7 +33,17 @@ const PokemonScreen = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPokemon, setSelectedPokemon] = useState<Pokemon | null>(null);
-  const [selectedType, setSelectedType] = useState<string>("");
+
+  const [trainers, setTrainers] = useState<Trainer[]>([]);
+  const [selectedTrainer, setSelectedTrainer] = useState("");
+
+  useEffect(() => {
+    const allTrainers: React.SetStateAction<Trainer[]> = [];
+    eliteFour.map((elite) => allTrainers.push(elite));
+    gymLeaders.map((lider) => allTrainers.push(lider));
+    commonTrainers.map((common) => allTrainers.push(common));
+    setTrainers(allTrainers);
+  }, []);
 
   useEffect(() => {
     const getPokemons = async () => {
@@ -101,15 +118,16 @@ const PokemonScreen = () => {
   };
 
   const renderPickerSelect = () => {
+    const trainerItems = trainers.map((trainer: Trainer) => ({
+      label: trainer.name,
+      value: trainer.name,
+    }));
+
     return (
       <View style={styles.dropdownContainer}>
         <RNPickerSelect
-          onValueChange={(value) => setSelectedType(value)}
-          items={[
-            { label: "Football", value: "football" },
-            { label: "Baseball", value: "baseball" },
-            { label: "Hockey", value: "hockey" },
-          ]}
+          onValueChange={(value) => setSelectedTrainer(value)}
+          items={trainerItems}
           style={pickerSelectStyles}
         />
       </View>

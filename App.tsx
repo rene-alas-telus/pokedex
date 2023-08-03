@@ -17,7 +17,8 @@ import { PersistGate } from "redux-persist/integration/react";
 import LoginScreen from "./src/LoginScreen";
 import PokemonScreen from "./src/PokemonScreen";
 import CustomDrawerContent from "./src/CustomDrawerContent";
-import TestScreen from "./src/TestScreen";
+import TrainerScreen from "./src/TrainersScreen";
+import GymScreen from "./src/GymsScreen";
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -101,7 +102,7 @@ const MainTabs = () => {
       />
       <Tab.Screen
         name="Trainer"
-        component={TestScreen}
+        component={TrainerScreen}
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
@@ -111,7 +112,7 @@ const MainTabs = () => {
       />
       <Tab.Screen
         name="Gym"
-        component={TestScreen}
+        component={GymScreen}
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (

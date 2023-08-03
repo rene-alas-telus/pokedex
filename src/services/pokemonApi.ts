@@ -26,7 +26,7 @@ export type PokemonDetailsResponse = {
   }[];
 };
 
-export const fetchPokemons = async (limit = 151, offset = 0) => {
+export const fetchPokemons = async (limit = 251, offset = 0) => {
   try {
     const response = await fetch(
       `https://pokeapi.co/api/v2/pokemon?limit=${limit}&offset=${offset}`
