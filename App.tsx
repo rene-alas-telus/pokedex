@@ -11,6 +11,8 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { setAuthenticated } from "./store/store";
+import { persistor } from "./store/store";
+import { PersistGate } from "redux-persist/integration/react";
 
 import LoginScreen from "./src/LoginScreen";
 import PokemonScreen from "./src/PokemonScreen";
@@ -70,10 +72,12 @@ const Navigation = () => {
 const app = () => {
   return (
     <Provider store={store}>
-      <BaseProvider defaultTheme={alliumTheme}>
-        <Navigation />
-        <StatusBar style="auto" />
-      </BaseProvider>
+      <PersistGate loading={null} persistor={persistor}>
+        <BaseProvider defaultTheme={alliumTheme}>
+          <Navigation />
+          <StatusBar style="auto" />
+        </BaseProvider>
+      </PersistGate>
     </Provider>
   );
 };

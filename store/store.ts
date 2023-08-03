@@ -1,5 +1,7 @@
 import { Reducer, createStore } from "redux";
 import { Pokemon } from "../src/domain/pokemon";
+import { persistStore, persistReducer } from "redux-persist";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Define the state type
 interface AppState {
@@ -74,7 +76,22 @@ const rootReducer: Reducer<AppState, any> = (state = initialState, action) => {
   }
 };
 
-// Create the Redux store
-const store = createStore(rootReducer);
+// Add Redux persistence configuration
+const persistConfig = {
+  key: "root", // Key used to store the data in AsyncStorage
+  storage: AsyncStorage, // Use AsyncStorage for local storage
+  whitelist: ["userName", "password", "isAuthenticated"], // List of state fields to persist
+};
+
+const persistedReducer = persistReducer<AppState, any>(
+  persistConfig,
+  rootReducer
+);
+
+// Create the Redux store with persistence
+const store = createStore(persistedReducer);
+
+// Create a persistor object to allow manual control over rehydration
+export const persistor = persistStore(store);
 
 export default store;

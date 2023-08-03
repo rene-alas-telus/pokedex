@@ -19,10 +19,16 @@ const LoginScreen = (props: {
   const dispatch = useDispatch();
 
   const handleLogin = () => {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
     if (userName.length > 0 && password.length > 0) {
+      if (!emailPattern.test(userName)) {
+        alert("Invalid email address");
+        return;
+      }
+
       dispatch(setCredentials(userName, password));
       dispatch(setAuthenticated(true));
-      //props.navigation.navigate("Main");
     } else {
       alert("No Info provided");
     }

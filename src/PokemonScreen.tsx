@@ -100,6 +100,22 @@ const PokemonScreen = () => {
     setSelectedPokemon(pokemon);
   };
 
+  const renderPickerSelect = () => {
+    return (
+      <View style={styles.dropdownContainer}>
+        <RNPickerSelect
+          onValueChange={(value) => setSelectedType(value)}
+          items={[
+            { label: "Football", value: "football" },
+            { label: "Baseball", value: "baseball" },
+            { label: "Hockey", value: "hockey" },
+          ]}
+          style={pickerSelectStyles}
+        />
+      </View>
+    );
+  };
+
   return (
     <View style={styles.container}>
       {loading ? (
@@ -152,19 +168,7 @@ const PokemonScreen = () => {
                 <View style={styles.modalRow}>
                   <Text style={styles.addToTrainerText}>Add to Trainer</Text>
                 </View>
-                <View style={styles.modalRow}>
-                  <RNPickerSelect
-                    onValueChange={(value) => setSelectedType(value)}
-                    items={[
-                      { label: "Football", value: "football" },
-                      { label: "Baseball", value: "baseball" },
-                      { label: "Hockey", value: "hockey" },
-                    ]}
-                    style={{
-                      ...pickerSelectStyles,
-                    }}
-                  />
-                </View>
+                <View style={styles.modalRow}>{renderPickerSelect()}</View>
               </View>
             </Modal>
           )}
@@ -179,24 +183,26 @@ const pickerSelectStyles = StyleSheet.create({
     fontSize: 16,
     paddingVertical: 12,
     paddingHorizontal: 10,
-    borderWidth: 1,
-    borderColor: "black",
-    borderRadius: 4,
+    //borderWidth: 1,
+    //borderColor: "black",
+    //borderRadius: 4,
     color: "black",
     paddingRight: 30,
-    width: "200%",
+    // Remove width from here
+    // width: "200%",
     justifyContent: "center",
   },
   inputAndroid: {
     fontSize: 16,
     paddingHorizontal: 10,
     paddingVertical: 8,
-    borderWidth: 1,
-    borderColor: "black",
-    borderRadius: 8,
+    //borderWidth: 1,
+    //borderColor: "black",
+    //borderRadius: 8,
     color: "black",
     paddingRight: 30,
-    width: "200%",
+    // Remove width from here
+    // width: "200%",
     justifyContent: "center",
   },
 });
