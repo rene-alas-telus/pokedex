@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useDispatch } from "react-redux";
 import {
   View,
@@ -9,12 +9,19 @@ import {
   StyleSheet,
 } from "react-native";
 import { setCredentials, setAuthenticated } from "../store/store";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  interpolate,
+} from "react-native-reanimated";
 
 const LoginScreen = (props: {
   navigation: { navigate: (arg0: string) => void };
 }) => {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
+  const animatedValue = useSharedValue(0);
 
   const dispatch = useDispatch();
 
@@ -29,17 +36,36 @@ const LoginScreen = (props: {
 
       dispatch(setCredentials(userName, password));
       dispatch(setAuthenticated(true));
+      animateImage();
     } else {
       alert("No Info provided");
     }
   };
+
+  const animateImage = () => {
+    animatedValue.value = withTiming(1, { duration: 1000 });
+  };
+
+  const animatedStyle = useAnimatedStyle(() => {
+    const shakeAmount = 20;
+    const interpolatedValue = interpolate(
+      animatedValue.value,
+      [0, 0.5, 1],
+      [0, -shakeAmount, 0]
+    );
+
+    return {
+      transform: [{ translateX: interpolatedValue }],
+    };
+  });
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Pokedex</Text>
 
-      <Image
+      <Animated.Image
         source={require("../assets/images/pokeball.png")}
-        style={styles.image}
+        style={[styles.image, animatedStyle]}
       />
 
       <TextInput
