@@ -23,6 +23,7 @@ import {
   eliteFour,
   gymLeaders,
 } from "../data/trainers";
+import { Ionicons } from "@expo/vector-icons";
 
 const PokemonScreen = () => {
   const dispatch = useDispatch();
@@ -33,6 +34,7 @@ const PokemonScreen = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPokemon, setSelectedPokemon] = useState<Pokemon | null>(null);
+  const [itIsSearching, setItIsSearching] = useState(false);
 
   const [trainers, setTrainers] = useState<Trainer[]>([]);
   const [selectedTrainer, setSelectedTrainer] = useState("");
@@ -117,6 +119,20 @@ const PokemonScreen = () => {
     setSelectedPokemon(pokemon);
   };
 
+  const handleSearch = () => {
+    setItIsSearching(true);
+    const filteredPokemons = pokemons.filter((pokemon: Pokemon) =>
+      pokemon.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setLocalPokemons(filteredPokemons);
+  };
+
+  const clearSearch = () => {
+    setLocalPokemons(pokemons);
+    setSearchQuery("");
+    setItIsSearching(false);
+  };
+
   const renderPickerSelect = () => {
     const trainerItems = trainers.map((trainer: Trainer) => ({
       label: trainer.name,
@@ -140,19 +156,47 @@ const PokemonScreen = () => {
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
         <>
-          <TextInput
-            style={styles.searchBar}
-            placeholder="Search Pokemons"
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-          <FlatList
-            data={localPokemons.filter((pokemon: any) =>
-              pokemon.name.toLowerCase().includes(searchQuery.toLowerCase())
+          <View style={styles.searchBar}>
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search Pokemons"
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+            />
+            {!itIsSearching ? (
+              <TouchableOpacity
+                style={styles.searchButton}
+                onPress={handleSearch}
+              >
+                <Ionicons name="search" size={20} color="white" />
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                style={styles.clearButton}
+                onPress={clearSearch}
+              >
+                <Ionicons name="close-outline" size={20} color="white" />
+              </TouchableOpacity>
             )}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id.toString()}
-          />
+          </View>
+          {localPokemons.length > 0 ? (
+            <FlatList
+              // data={localPokemons.filter((pokemon: any) =>
+              //   pokemon.name.toLowerCase().includes(searchQuery.toLowerCase())
+              // )}
+              data={localPokemons}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id.toString()}
+            />
+          ) : (
+            <View style={styles.noResultsContainer}>
+              <Image
+                style={styles.noResultsImage}
+                source={require("../assets/images/cryingPikchu.png")} // Replace with your image path
+              />
+              <Text style={styles.noResultsText}>No Pokemons found</Text>
+            </View>
+          )}
 
           {selectedPokemon !== null && (
             <Modal
@@ -275,14 +319,53 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   searchBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     width: "90%",
     height: 40,
     borderColor: "gray",
     borderWidth: 1,
-    borderRadius: 5,
-    padding: 10,
+    borderRadius: 20,
+    paddingRight: 5,
+    paddingLeft: 15,
     marginBottom: 10,
     marginTop: 10,
+  },
+  searchInput: {
+    flex: 1,
+    marginRight: 10,
+  },
+  searchButton: {
+    backgroundColor: "#007aff",
+    borderRadius: 20,
+    width: 30,
+    height: 30,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  clearButton: {
+    backgroundColor: "red",
+    borderRadius: 20,
+    width: 30,
+    height: 30,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  noResultsContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  noResultsText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "gray",
+  },
+  noResultsImage: {
+    width: 100, // Adjust the width and height as needed
+    height: 100,
+    marginBottom: 10,
   },
   modalContent: {
     backgroundColor: "white",

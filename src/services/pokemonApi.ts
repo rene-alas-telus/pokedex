@@ -26,10 +26,10 @@ export type PokemonDetailsResponse = {
   }[];
 };
 
-export const fetchPokemons = async (limit = 251, offset = 0) => {
+export const fetchPokemons = async () => {
   try {
     const response = await fetch(
-      `https://pokeapi.co/api/v2/pokemon?limit=${limit}&offset=${offset}`
+      `https://pokeapi.co/api/v2/pokemon?limit=251&offset=$0`
     );
     const pokemon: PokemonResponse = await response.json();
     const pokemonRequests = pokemon.results.map(({ url }) => fetch(url));
@@ -39,7 +39,7 @@ export const fetchPokemons = async (limit = 251, offset = 0) => {
     );
     return pokemonDetails;
   } catch (err) {
-    console.log(err);
+    console.log("Error in Fetch: " + err);
     return [];
   }
 };

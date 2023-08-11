@@ -18,8 +18,6 @@
     "@telus-uds/components-base": "^1.47.0",
     "@telus-uds/palette-allium": "^2.18.2",
     "@telus-uds/theme-allium": "^4.0.0",
-    "@telus/core-fetch": "^2.19.0",
-    "@telus/use-locale": "^2.19.0",
     "axios": "^1.4.0",
     "expo": "~49.0.5",
     "expo-status-bar": "~1.6.0",
